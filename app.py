@@ -105,6 +105,7 @@ def extract_text_from_docx(docx_file):
         text += paragraph.text + "\n"
     return text
 
+<<<<<<< HEAD
 # Detect content type
 def detect_content_type(text):
     text_lower = text.lower()
@@ -119,6 +120,213 @@ def detect_content_type(text):
     scores = {content: sum(1 for kw in words if kw in text_lower) for content, words in keywords.items()}
     detected = max(scores, key=scores.get) if max(scores.values()) > 2 else 'general'
     return detected
+=======
+    tab1, tab2 = st.tabs(["Login", "Register"])
+    with tab1:
+        username = st.text_input("Username", key="login_user")
+        password = st.text_input("Password", type="password", key="login_pass")
+        if st.button("Login"):
+            success, msg = dummy_login(username, password)
+            if success:
+                st.session_state.logged_in = True
+                st.session_state.username = msg
+                st.success(f"Welcome, {msg}!")
+                st.rerun()
+            else:
+                st.error(msg)
+    with tab2:
+        reg_user = st.text_input("New Username", key="reg_user")
+        reg_pass = st.text_input("New Password", type="password", key="reg_pass")
+        if st.button("Register"):
+            success, msg = dummy_register(reg_user, reg_pass)
+            if success:
+                st.success(msg)
+                st.info("You can now login.")
+            else:
+                st.error(msg)
+    st.stop()
+
+# ==================== SIDEBAR ====================
+with st.sidebar:
+    st.image("https://via.placeholder.com/150x50.png?text=Linguify.AI", use_column_width=True)
+    st.markdown(f"**User:** {st.session_state.username}")
+    if st.button("Home", use_container_width=True): st.session_state.current_page = "Home"
+    if st.button("Analytics", use_container_width=True): st.session_state.current_page = "Analytics"
+    if st.button("History", use_container_width=True): st.session_state.current_page = "History"
+    if st.button("Logout", use_container_width=True):
+        st.session_state.logged_in = False
+        st.session_state.username = None
+        st.rerun()
+
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = "Home"
+
+# ==================== CSS ====================
+st.markdown("""
+<style>
+div.stButton > button {background-color: #4CAF50; color: white; border-radius: 10px; padding: 10px 20px;}
+.stTextArea textarea {border-radius: 10px; border: 1px solid #ccc; padding: 10px;}
+.stMetric {box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 10px; padding: 10px;}
+.history-card {background-color: #f9f9f9; border-left: 5px solid #4CAF50; padding: 15px; margin: 10px 0; border-radius: 8px;}
+</style>
+""", unsafe_allow_html=True)
+
+# ==================== MODELS (SAFE) ====================
+@st.cache_resource
+def load_summarizer():
+    return pipeline(
+        "summarization",
+        model="facebook/bart-large-cnn",
+        truncation=True,
+        max_length=512,
+        min_length=30,
+        do_sample=False
+    )
+
+@st.cache_resource
+def load_paraphraser():
+    return pipeline("text2text-generation", model="t5-small")
+
+@st.cache_resource
+def load_embedder():
+    return SentenceTransformer('all-MiniLM-L6-v2')
+
+@st.cache_resource
+def load_keyword_extractor():
+    return KeyBERT()
+
+@st.cache_resource
+def load_sentiment_analyzer():
+    return nltk.sentiment.vader.SentimentIntensityAnalyzer()
+
+@st.cache_resource
+def load_translator():
+    return Translator()
+
+# Lazy & Safe Grammar Tool
+def load_grammar_tool():
+    if not GRAMMAR_AVAILABLE:
+        return None
+    try:
+        tool = LanguageTool('en-US', remote_server=None)
+        return tool
+    except Exception as e:
+        st.warning("Grammar tool unavailable. Skipping grammar check.")
+        return None
+
+# ==================== CORE FUNCTIONS ====================
+def extract_text(uploaded_file):
+    if not uploaded_file:
+        return None
+    try:
+        if uploaded_file.type == "text/plain":
+            return str(uploaded_file.read(), "utf-8")
+        elif uploaded_file.type == "application/pdf":
+            reader = PyPDF2.PdfReader(uploaded_file)
+            text = ""
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + " "
+            return text.strip()
+        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            return docx2txt.process(uploaded_file)
+    except Exception as e:
+        st.error(f"Failed to read file: {e}")
+    return None
+
+def generate_summary(text, ratio):
+    summarizer = load_summarizer()
+    words = text.split()
+    if len(words) > 900:
+        text = " ".join(words[:900])
+        st.caption("Input truncated to 900 words for model compatibility.")
+    max_len = max(30, int(len(text.split()) * ratio))
+    try:
+        result = summarizer(text, max_length=max_len, min_length=30, do_sample=False)
+        return result[0]['summary_text']
+    except Exception as e:
+        st.error(f"Summarization failed: {e}")
+        return "Summary generation failed."
+
+def generate_paraphrase(text, tone):
+    paraphraser = load_paraphraser()
+    prompt = f"paraphrase in {tone} tone: {text}"
+    try:
+        result = paraphraser(prompt, max_length=200, truncation=True)
+        return result[0]['generated_text']
+    except Exception as e:
+        st.error(f"Paraphrasing failed: {e}")
+        return "Paraphrase failed."
+
+def translate_text(text, lang):
+    if lang == "English":
+        return text
+    try:
+        return load_translator().translate(text, dest=lang.lower()[:2]).text
+    except:
+        return text
+    
+def generate_pdf(text):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.multi_cell(0, 10, text)
+    pdf_output = BytesIO()
+    pdf.output(pdf_output)
+    pdf_output.seek(0)
+    return pdf_output
+
+def grammar_check(text):
+    tool = load_grammar_tool()
+    if not tool:
+        return text
+    try:
+        return tool.correct(text)
+    except:
+        return text
+
+def keyword_extract(text):
+    try:
+        kw_model = load_keyword_extractor()
+        return [kw[0] for kw in kw_model.extract_keywords(text, top_n=5)]
+    except:
+        return []
+
+def plagiarism_score(orig, para):
+    try:
+        e1, e2 = load_embedder().encode([orig, para])
+        return round(util.cos_sim(e1, e2).item() * 100, 2)
+    except:
+        return 0.0
+
+def sentiment_analysis(text):
+    return load_sentiment_analyzer().polarity_scores(text)
+
+# ==================== PAGES ====================
+if st.session_state.current_page == "Home":
+    st.title("Linguify.AI — Smart Text Tool")
+
+    with st.sidebar:
+        mode = st.selectbox("Mode", ["Summarization", "Paraphrasing", "All-in-One"])
+        if "Summarization" in mode:
+            ratio = st.slider("Summary Ratio (%)", 10, 90, 30) / 100
+        output_lang = st.selectbox("Output Language", ["English", "French", "Spanish"])
+        tone_style = st.selectbox("Tone", ["Neutral", "Formal", "Casual"])
+
+    input_text = st.text_area("Input Text", height=200)
+    uploaded_file = st.file_uploader("Upload File", type=["txt", "pdf", "docx"])
+    
+    if uploaded_file:
+        extracted = extract_text(uploaded_file)
+        if extracted:
+            input_text = extracted
+            st.success(f"✅ {uploaded_file.name} uploaded successfully!")
+            st.caption(f"File type: {uploaded_file.type}, Size: {uploaded_file.size/1024:.1f} KB")
+
+        else:
+            st.error("Could not extract text from file.")
+>>>>>>> c3269da (Added PDF download feature)
 
 # Gemini API Functions with Context-Aware Processing
 def process_text_with_gemini(text, operation, language="English", tone="Neutral", adaptation="General", 
@@ -617,6 +825,7 @@ def main():
         tab1, tab2 = st.tabs(["Login", "Register"])
         
         with tab1:
+<<<<<<< HEAD
             st.subheader("Login")
             username = st.text_input("Username", key="login_username")
             password = st.text_input("Password", type="password", key="login_password")
@@ -1190,6 +1399,35 @@ def main():
                     st.rerun()
         else:
             st.info("📭 No history yet. Start processing some text!")
+=======
+            st.write(output_data.get("summary", "No summary generated."))
+            
+            if output_data.get("summary"):
+                st.download_button(
+                    label="📄 Download Summary as PDF",
+                    data=generate_pdf(output_data["summary"]),
+                    file_name="TextMorph_Summary.pdf",
+                    mime="application/pdf"
+                )
+
+        with tab2:
+            st.write(output_data.get("paraphrase", "No paraphrase generated."))
+            if output_data.get("paraphrase"):
+                st.download_button(
+                    label="📄 Download Paraphrase as PDF",
+                    data=generate_pdf(output_data["paraphrase"]),
+                    file_name="TextMorph_Paraphrase.pdf",
+                    mime="application/pdf"
+                )
+
+        with tab3:
+            st.json({
+                "Keywords": output_data["keywords"],
+                "Readability Score": output_data["readability"],
+                "Plagiarism %": output_data["plagiarism"],
+                "Sentiment": output_data["sentiment"]
+            })
+>>>>>>> c3269da (Added PDF download feature)
 
 if __name__ == "__main__":
     main()
