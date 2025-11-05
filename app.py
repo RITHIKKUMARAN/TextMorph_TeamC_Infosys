@@ -11,6 +11,8 @@ from datetime import datetime
 import json
 import markdown
 from difflib import SequenceMatcher
+from streamlit_mic_recorder import speech_to_text
+import tempfile
 
 # Load environment variables
 load_dotenv()
@@ -29,6 +31,11 @@ if 'user_profiles' not in st.session_state:
     st.session_state.user_profiles = {}
 if 'history' not in st.session_state:
     st.session_state.history = {}
+# Voice input session states
+if 'transcribed_text' not in st.session_state:
+    st.session_state.transcribed_text = ""
+if 'voice_input_confirmed' not in st.session_state:
+    st.session_state.voice_input_confirmed = False
 
 # User Authentication Functions
 def login_user(username, password):
@@ -335,21 +342,252 @@ PURPOSE_PRESETS = {
 
 # Main App
 def main():
-    st.set_page_config(page_title="AI Text Processor Pro", page_icon="📝", layout="wide")
-    
-    # Custom CSS
+    st.set_page_config(page_title="AI Text Processor-TextMorph", page_icon="📝", layout="wide")
     st.markdown("""
         <style>
-        .main-header {font-size: 3rem; color: #1E88E5; text-align: center; margin-bottom: 2rem;}
-        .stButton>button {background-color: #1E88E5; color: white; border-radius: 5px;}
-        .output-section {background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin-top: 20px;}
-        .profile-box {background-color: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #1E88E5;}
+        /* --- General App & Body --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        }
+        
+        /* --- MAIN BACKGROUND GRADIENT --- */
+        [data-testid="stAppViewContainer"] > .main {
+            /* Light, airy, colorful gradient */
+            background-image: linear-gradient(135deg, #F3E8FF 0%, #E0F2FE 100%);
+        }
+        
+        /* --- VIBRANT Main Header --- */
+        h1.main-header {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            /* Vibrant Gradient text effect */
+            background: linear-gradient(90deg, #4F46E5 0%, #D946EF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* --- Sidebar (Dark Gradient) --- */
+        [data-testid="stSidebar"] {
+            background-image: linear-gradient(180deg, #1F2937 0%, #111827 100%);
+            border-right: 1px solid #1F2937;
+        }
+        [data-testid="stSidebar"] * {
+            color: #D1D5DB; /* Light gray text */
+        }
+        [data-testid="stSidebar"] h1, 
+        [data-testid="stSidebar"] h2, 
+        [data-testid="stSidebar"] h3 {
+            color: #FFFFFF; /* White headers */
+            /* Gradient underline */
+            border-bottom: 2px solid;
+            border-image-slice: 1;
+            border-image-source: linear-gradient(90deg, #4F46E5, #D946EF);
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+        [data-testid="stSidebar"] label {
+            font-weight: 600;
+            color: #E5E7EB; /* Lighter label text */
+        }
+        [data-testid="stSidebar"] [data-baseweb="select"] > div {
+            background-color: #1F2937;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            color: #F9FAFB;
+        }
+        [data-testid="stSidebar"] .stButton>button {
+            background-color: #374151;
+            color: #D1D5DB;
+            border: 1px solid #4B5563;
+        }
+        
+        /* --- JUICY GRADIENT BUTTONS --- */
+        
+        /* Default buttons (Login, Logout, Profile, etc.) */
+        .stButton>button:not([kind="primary"]):not([kind="secondary"]) {
+            background-image: linear-gradient(45deg, #3B82F6 0%, #6366F1 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-weight: 600;
+            box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+            transition: all 0.3s ease;
+        }
+        .stButton>button:not([kind="primary"]):not([kind="secondary"]):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(59, 130, 246, 0.5);
+        }
+        
+        /* Primary buttons (Process Text, Use This Text, etc.) */
+        [data-testid="stButton"] button[kind="primary"] {
+            background-image: linear-gradient(45deg, #34D399 0%, #22C55E 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-weight: 600;
+            box-shadow: 0 4px 14px 0 rgba(34, 197, 94, 0.4);
+            transition: all 0.3s ease;
+        }
+        [data-testid="stButton"] button[kind="primary"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px 0 rgba(34, 197, 94, 0.55);
+        }
+        
+        /* Secondary buttons (Clear History) */
+        [data-testid="stButton"] button[kind="secondary"] {
+            background: #FFFFFF;
+            color: #4B5563;
+            border: 1px solid #CBD5E0;
+            box-shadow: none;
+            border-radius: 8px;
+            padding: 10px 24px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        [data-testid="stButton"] button[kind="secondary"]:hover {
+            background-color: #F9FAFB;
+            border-color: #9CA3AF;
+        }
+
+        /* --- GRADIENT TABS --- */
+        [data-testid="stTabs"] [data-baseweb="tab-list"] {
+            border-bottom-color: #CBD5E0;
+        }
+        [data-testid="stTabs"] [data-baseweb="tab"] {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #718096;
+            padding: 12px 16px;
+        }
+        [data-testid="stTabs"] [aria-selected="true"] {
+            color: #4F46E5;
+            padding-bottom: 12px;
+            /* Gradient underline for active tab */
+            border-image: linear-gradient(90deg, #4F46E5, #D946EF) 1;
+            border-bottom-width: 4px;
+            border-top: 0;
+            border-left: 0;
+            border-right: 0;
+        }
+
+        /* --- MODERN "GRADIENT BORDER" CARDS --- */
+        .output-section, [data-testid="stExpander"], [data-testid="stMetric"] {
+            /* This is the gradient border magic */
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #4F46E5, #D946EF) border-box;
+            border: 2px solid transparent;
+            /* --- */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+        
+        /* --- GRADIENT BACKGROUND CARDS --- */
+        .profile-box {
+            background-image: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+            border-left: 5px solid #1E88E5;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+        .voice-input-box {
+            background-image: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+            border: 2px solid #F59E0B;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+        .transcription-box {
+            background-image: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+            border-left: 5px solid #22C55E;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 10px;
+        }
+        
+        /* --- Expanders (History & Profile) --- */
+        [data-testid="stExpander"] > details > summary {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #2D3748;
+        }
+        
+        /* --- GRADIENT Metrics (History Tab) --- */
+        [data-testid="stMetric"] > div:first-child { /* Label */
+            color: #718096;
+            font-weight: 500;
+        }
+        [data-testid="stMetric"] > div:nth-child(2) { /* Value */
+            font-size: 2.25rem;
+            font-weight: 700;
+            /* Gradient text */
+            background: linear-gradient(90deg, #1E88E5, #673AB7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* --- Inputs (Text Area, Text Input) --- */
+        [data-testid="stTextArea"] textarea,
+        [data-testid="stTextInput"] input {
+            background-color: #FFFFFF;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+        [data-testid="stTextArea"] textarea:focus,
+        [data-testid="stTextInput"] input:focus {
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            outline: none;
+        }
+        
+        /* --- GRADIENT Alerts --- */
+        [data-testid="stAlert"] {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        [data-testid="stAlert"][data-baseweb="alert-info"] {
+            background-image: linear-gradient(135deg, #EFF6FF 0%, #EBF3FF 100%);
+            color: #2563EB;
+            border-left: 5px solid #2563EB;
+        }
+        [data-testid="stAlert"][data-baseweb="alert-success"] {
+            background-image: linear-gradient(135deg, #F0FDF4 0%, #EBFBF1 100%);
+            color: #22C55E;
+            border-left: 5px solid #22C55E;
+        }
+        [data-testid="stAlert"][data-baseweb="alert-warning"] {
+            background-image: linear-gradient(135deg, #FFFBEB 0%, #FEF9E3 100%);
+            color: #F59E0B;
+            border-left: 5px solid #F59E0B;
+        }
+        [data-testid="stAlert"][data-baseweb="alert-error"] {
+            background-image: linear-gradient(135deg, #FEF2F2 0%, #FEECEC 100%);
+            color: #EF4444;
+            border-left: 5px solid #EF4444;
+        }
+        
         </style>
     """, unsafe_allow_html=True)
     
+    
     # Login/Register Page
     if not st.session_state.logged_in:
-        st.markdown("<h1 class='main-header'>📝 AI Text Processor Pro</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 class='main-header'>AI Text Processor-TextMorph</h1>", unsafe_allow_html=True)
         
         tab1, tab2 = st.tabs(["Login", "Register"])
         
@@ -386,7 +624,7 @@ def main():
     # Main Application (After Login)
     col1, col2, col3 = st.columns([5, 2, 1])
     with col1:
-        st.markdown("<h1 class='main-header'>📝 AI Text Processor Pro</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 class='main-header'>AI Text Processor-TextMorph</h1>", unsafe_allow_html=True)
     with col2:
         if st.button("👤 My Profile"):
             st.session_state.show_profile = not st.session_state.get('show_profile', False)
@@ -514,8 +752,8 @@ def main():
             if st.session_state.get('show_depth_info', False):
                 st.sidebar.info(
                     """
-                    **Brief:** 1-2 sentences\n
-                    **Detailed:** Full paragraph\n
+                    **Brief:** 1-2 sentences
+                    **Detailed:** Full paragraph
                     **Comprehensive:** Multi-section
                     """
                 )
@@ -554,10 +792,10 @@ def main():
         if st.session_state.get('show_readability_info', False):
             st.sidebar.info(
                 """
-                **Kids:** Simple words, short sentences\n
-                **Teens:** Clear with some complexity\n
-                **General:** Accessible for all\n
-                **Experts:** Technical terminology\n
+                **Kids:** Simple words, short sentences
+                **Teens:** Clear with some complexity
+                **General:** Accessible for all
+                **Experts:** Technical terminology
                 """
             )
         
@@ -566,7 +804,7 @@ def main():
         
         input_method = st.radio(
             "Choose input method:",
-            ["Type/Paste Text", "Upload File"]
+            ["Type/Paste Text", "Upload File", "🎤 Voice Input"]
         )
         
         input_text = ""
@@ -598,6 +836,64 @@ def main():
                         st.text_area("Extracted Text:", input_text, height=200, key="extracted")
                 except Exception as e:
                     st.error(f"Error reading file: {str(e)}")
+        
+        elif input_method == "🎤 Voice Input":
+            st.markdown("<div class='voice-input-box'>", unsafe_allow_html=True)
+            st.subheader("🎙️ Voice Recording & Transcription")
+            st.markdown("**Instructions:** Click the button to start recording, speak clearly into your microphone, and click again to stop. The audio will be automatically transcribed.")
+            
+            # Direct Speech-to-Text
+            text_from_speech = speech_to_text(
+                language='en',
+                start_prompt="🎙️ Start Speaking",
+                stop_prompt="⏹️ Stop & Transcribe",
+                use_container_width=True,
+                just_once=False,
+                key='speech_to_text'
+            )
+            
+            if text_from_speech:
+                st.session_state.transcribed_text = text_from_speech
+                st.session_state.voice_input_confirmed = False
+                st.success(f"✅ Transcribed successfully!")
+            
+            # Show transcription result
+            if st.session_state.transcribed_text:
+                st.markdown("<div class='transcription-box'>", unsafe_allow_html=True)
+                st.markdown("**📝 Transcribed Text:**")
+                
+                # Editable text area for transcription
+                edited_text = st.text_area(
+                    "Edit if needed:",
+                    value=st.session_state.transcribed_text,
+                    height=150,
+                    key="transcription_edit"
+                )
+                
+                col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
+                
+                with col_btn1:
+                    if st.button("✅ Use This Text", type="primary", use_container_width=True):
+                        input_text = edited_text
+                        st.session_state.voice_input_confirmed = True
+                        st.success("✅ Text ready for processing!")
+                
+                with col_btn2:
+                    if st.button("🔄 Clear & Record Again", use_container_width=True):
+                        st.session_state.transcribed_text = ""
+                        st.session_state.voice_input_confirmed = False
+                        st.rerun()
+                
+                with col_btn3:
+                    st.caption(f"📊 {len(edited_text.split())} words | {len(edited_text)} characters")
+                
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+                # If confirmed, use the text
+                if st.session_state.voice_input_confirmed:
+                    input_text = edited_text
+            
+            st.markdown("</div>", unsafe_allow_html=True)
         
         # Process Button
         if st.button("🚀 Process Text", type="primary"):
@@ -634,7 +930,8 @@ def main():
                         'style': adaptation,
                         'summary_type': summary_type,
                         'depth': depth_level,
-                        'readability': readability
+                        'readability': readability,
+                        'input_method': input_method
                     }
                     add_to_history(st.session_state.username, operation, params, output_text)
         
@@ -822,6 +1119,8 @@ def main():
                             st.caption(f"**Summary Type:** {params['summary_type']}")
                             st.caption(f"**Depth:** {params['depth']}")
                         st.caption(f"**Readability:** {params['readability']}")
+                        if params.get('input_method'):
+                            st.caption(f"**Input Method:** {params['input_method']}")
                         
                         # Restore button
                         if st.button("♻️ Restore", key=f"restore_{idx}"):
