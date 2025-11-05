@@ -211,8 +211,33 @@ def main():
     
     operation = st.sidebar.selectbox(
         "Operation",
-        ["Summarize", "Rewrite"]
+        ["Summarize", "Paraphrase"]
     )
+    
+    # Show summary type only for Summarize operation
+    summary_type = None
+    if operation == "Summarize":
+        col_summary, col_info = st.sidebar.columns([3, 1])
+        with col_summary:
+            summary_type = st.selectbox(
+                "Summary Type",
+                ["Abstractive", "Extractive"]
+            )
+        with col_info:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("ℹ️", key="summary_info"):
+                st.session_state.show_summary_info = not st.session_state.get('show_summary_info', False)
+        
+        if st.session_state.get('show_summary_info', False):
+            st.sidebar.info(
+                """
+                **Abstractive Summary:**
+                Creates a new summary by understanding the content and generating original sentences. Like explaining a story in your own words.
+                
+                **Extractive Summary:**
+                Selects and combines the most important existing sentences from the original text. Like highlighting key sentences.
+                """
+            )
     
     language = st.sidebar.selectbox(
         "Output Language",
