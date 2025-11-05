@@ -1,0 +1,11 @@
+textprojectvenv/
+textprojkectvenv
+.env
+.env/
+__pycache__/
+*.pyc
+instance/
+*.sqlite3   
+vevnv/
+venv/
+venv
