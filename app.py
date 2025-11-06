@@ -105,7 +105,6 @@ def extract_text_from_docx(docx_file):
         text += paragraph.text + "\n"
     return text
 
-<<<<<<< HEAD
 # Detect content type
 def detect_content_type(text):
     text_lower = text.lower()
@@ -116,217 +115,329 @@ def detect_content_type(text):
         'legal': ['hereby', 'pursuant to', 'whereas', 'therefore', 'shall', 'clause'],
         'technical': ['function', 'algorithm', 'system', 'implementation', 'configuration']
     }
-    
     scores = {content: sum(1 for kw in words if kw in text_lower) for content, words in keywords.items()}
     detected = max(scores, key=scores.get) if max(scores.values()) > 2 else 'general'
     return detected
-=======
+
+# ==================== LOGIN & REGISTER ====================
+if not st.session_state.logged_in:
     tab1, tab2 = st.tabs(["Login", "Register"])
+
     with tab1:
+        st.subheader("Login")
         username = st.text_input("Username", key="login_user")
         password = st.text_input("Password", type="password", key="login_pass")
         if st.button("Login"):
-            success, msg = dummy_login(username, password)
+            success = login_user(username, password)
             if success:
+                st.success(f"Welcome, {username}!")
                 st.session_state.logged_in = True
-                st.session_state.username = msg
-                st.success(f"Welcome, {msg}!")
+                st.session_state.username = username
                 st.rerun()
             else:
-                st.error(msg)
+                st.error("Invalid username or password")
+
     with tab2:
+        st.subheader("Register")
         reg_user = st.text_input("New Username", key="reg_user")
         reg_pass = st.text_input("New Password", type="password", key="reg_pass")
+        confirm_pass = st.text_input("Confirm Password", type="password")
         if st.button("Register"):
-            success, msg = dummy_register(reg_user, reg_pass)
-            if success:
-                st.success(msg)
-                st.info("You can now login.")
+            if reg_pass != confirm_pass:
+                st.error("Passwords do not match")
+            elif len(reg_pass) < 6:
+                st.error("Password must be at least 6 characters")
+            elif register_user(reg_user, reg_pass):
+                st.success("Registration successful! Please login.")
             else:
-                st.error(msg)
+                st.error("Username already exists")
+
     st.stop()
 
 # ==================== SIDEBAR ====================
 with st.sidebar:
-    st.image("https://via.placeholder.com/150x50.png?text=Linguify.AI", use_column_width=True)
-    st.markdown(f"**User:** {st.session_state.username}")
-    if st.button("Home", use_container_width=True): st.session_state.current_page = "Home"
-    if st.button("Analytics", use_container_width=True): st.session_state.current_page = "Analytics"
-    if st.button("History", use_container_width=True): st.session_state.current_page = "History"
-    if st.button("Logout", use_container_width=True):
-        st.session_state.logged_in = False
-        st.session_state.username = None
-        st.rerun()
+        st.image("https://via.placeholder.com/150x50.png?text=Linguify.AI", use_column_width=True)
+        st.markdown(f"**User:** {st.session_state.username}")
+        if st.button("Home", use_container_width=True): st.session_state.current_page = "Home"
+        if st.button("Analytics", use_container_width=True): st.session_state.current_page = "Analytics"
+        if st.button("History", use_container_width=True): st.session_state.current_page = "History"
+        if st.button("Logout", use_container_width=True):
+            st.session_state.logged_in = False
+            st.session_state.username = None
+            st.rerun()
 
 if 'current_page' not in st.session_state:
-    st.session_state.current_page = "Home"
+        st.session_state.current_page = "Home"
 
-# ==================== CSS ====================
+# ==================== MODERN UI (CSS) ====================
 st.markdown("""
 <style>
-div.stButton > button {background-color: #4CAF50; color: white; border-radius: 10px; padding: 10px 20px;}
-.stTextArea textarea {border-radius: 10px; border: 1px solid #ccc; padding: 10px;}
-.stMetric {box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 10px; padding: 10px;}
-.history-card {background-color: #f9f9f9; border-left: 5px solid #4CAF50; padding: 15px; margin: 10px 0; border-radius: 8px;}
+/* Base page style */
+body {
+    background-color: #F7F9FC;
+    color: #1E1E1E;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Headings */
+h1, h2, h3 {
+    color: #3B3B98;
+    font-weight: 600;
+}
+
+/* Buttons */
+div.stButton > button {
+    background: linear-gradient(90deg, #6366F1, #4338CA);
+    color: white;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-weight: 500;
+    border: none;
+    transition: 0.3s;
+}
+div.stButton > button:hover {
+    background: linear-gradient(90deg, #4F46E5, #3730A3);
+    transform: scale(1.03);
+}
+
+/* Text areas */
+.stTextArea textarea {
+    border-radius: 12px;
+    border: 1px solid #D1D5DB;
+    padding: 12px;
+    background-color: #FFFFFF;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Dark Sidebar */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #1E1B4B, #312E81);
+}
+section[data-testid="stSidebar"] * {
+    color: #F9FAFB !important;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+/* Sidebar buttons (Home, Analytics, etc.) */
+section[data-testid="stSidebar"] button {
+    background-color: #4338CA !important;
+    color: #F9FAFB !important;
+    border: 1px solid #6366F1 !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    transition: 0.3s !important;
+}
+section[data-testid="stSidebar"] button:hover {
+    background-color: #6366F1 !important;
+    transform: scale(1.03);
+}
+
+/* Sidebar dropdowns/select boxes */
+section[data-testid="stSidebar"] select,
+section[data-testid="stSidebar"] .stSelectbox,
+section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {
+    background-color: #4338CA !important;
+    color: #F9FAFB !important;
+    border-radius: 6px !important;
+    border: 1px solid #6366F1 !important;
+}
+
+/* Info icons ("i" buttons) */
+section[data-testid="stSidebar"] [data-testid="stTooltipHoverTarget"] {
+    filter: brightness(0) invert(1);
+}
+
+/* Tabs */
+div[data-baseweb="tab"] {
+    background-color: #E0E7FF;
+    color: #1E1E1E;
+    border-radius: 10px 10px 0 0;
+    padding: 6px 14px;
+    font-weight: 500;
+}
+div[data-baseweb="tab"]:hover {
+    background-color: #C7D2FE;
+}
+
+/* Metrics cards */
+.stMetric {
+    background-color: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Footer */
+footer {
+    visibility: hidden;
+}
+            
+            /* --- Fix info ("i") icon size and alignment --- */
+[data-testid="stTooltipHoverTarget"] svg {
+    width: 14px !important;
+    height: 14px !important;
+    vertical-align: middle !important;
+    margin-left: 4px !important;
+    opacity: 0.8;
+    transition: 0.2s ease;
+}
+[data-testid="stTooltipHoverTarget"] svg:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* --- Fix output section box alignment --- */
+.output-section {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.output-section h3, .output-section p {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== MODELS (SAFE) ====================
+    # ==================== MODELS (SAFE) ====================
 @st.cache_resource
 def load_summarizer():
-    return pipeline(
-        "summarization",
-        model="facebook/bart-large-cnn",
-        truncation=True,
-        max_length=512,
-        min_length=30,
-        do_sample=False
-    )
+        return pipeline(
+            "summarization",
+            model="facebook/bart-large-cnn",
+            truncation=True,
+            max_length=512,
+            min_length=30,
+            do_sample=False
+        )
 
 @st.cache_resource
 def load_paraphraser():
-    return pipeline("text2text-generation", model="t5-small")
+        return pipeline("text2text-generation", model="t5-small")
 
 @st.cache_resource
 def load_embedder():
-    return SentenceTransformer('all-MiniLM-L6-v2')
+        return SentenceTransformer('all-MiniLM-L6-v2')
 
 @st.cache_resource
 def load_keyword_extractor():
-    return KeyBERT()
+        return KeyBERT()
 
 @st.cache_resource
 def load_sentiment_analyzer():
-    return nltk.sentiment.vader.SentimentIntensityAnalyzer()
+        return nltk.sentiment.vader.SentimentIntensityAnalyzer()
 
 @st.cache_resource
 def load_translator():
-    return Translator()
+        return Translator()
 
-# Lazy & Safe Grammar Tool
+    # Lazy & Safe Grammar Tool
 def load_grammar_tool():
-    if not GRAMMAR_AVAILABLE:
-        return None
-    try:
-        tool = LanguageTool('en-US', remote_server=None)
-        return tool
-    except Exception as e:
-        st.warning("Grammar tool unavailable. Skipping grammar check.")
-        return None
+        if not GRAMMAR_AVAILABLE:
+            return None
+        try:
+            tool = LanguageTool('en-US', remote_server=None)
+            return tool
+        except Exception as e:
+            st.warning("Grammar tool unavailable. Skipping grammar check.")
+            return None
 
-# ==================== CORE FUNCTIONS ====================
+    # ==================== CORE FUNCTIONS ====================
 def extract_text(uploaded_file):
-    if not uploaded_file:
+        if not uploaded_file:
+            return None
+        try:
+            if uploaded_file.type == "text/plain":
+                return str(uploaded_file.read(), "utf-8")
+            elif uploaded_file.type == "application/pdf":
+                reader = PyPDF2.PdfReader(uploaded_file)
+                text = ""
+                for page in reader.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text += page_text + " "
+                return text.strip()
+            elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                return docx2txt.process(uploaded_file)
+        except Exception as e:
+            st.error(f"Failed to read file: {e}")
         return None
-    try:
-        if uploaded_file.type == "text/plain":
-            return str(uploaded_file.read(), "utf-8")
-        elif uploaded_file.type == "application/pdf":
-            reader = PyPDF2.PdfReader(uploaded_file)
-            text = ""
-            for page in reader.pages:
-                page_text = page.extract_text()
-                if page_text:
-                    text += page_text + " "
-            return text.strip()
-        elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-            return docx2txt.process(uploaded_file)
-    except Exception as e:
-        st.error(f"Failed to read file: {e}")
-    return None
 
 def generate_summary(text, ratio):
-    summarizer = load_summarizer()
-    words = text.split()
-    if len(words) > 900:
-        text = " ".join(words[:900])
-        st.caption("Input truncated to 900 words for model compatibility.")
-    max_len = max(30, int(len(text.split()) * ratio))
-    try:
-        result = summarizer(text, max_length=max_len, min_length=30, do_sample=False)
-        return result[0]['summary_text']
-    except Exception as e:
-        st.error(f"Summarization failed: {e}")
-        return "Summary generation failed."
+        summarizer = load_summarizer()
+        words = text.split()
+        if len(words) > 900:
+            text = " ".join(words[:900])
+            st.caption("Input truncated to 900 words for model compatibility.")
+        max_len = max(30, int(len(text.split()) * ratio))
+        try:
+            result = summarizer(text, max_length=max_len, min_length=30, do_sample=False)
+            return result[0]['summary_text']
+        except Exception as e:
+            st.error(f"Summarization failed: {e}")
+            return "Summary generation failed."
 
 def generate_paraphrase(text, tone):
-    paraphraser = load_paraphraser()
-    prompt = f"paraphrase in {tone} tone: {text}"
-    try:
-        result = paraphraser(prompt, max_length=200, truncation=True)
-        return result[0]['generated_text']
-    except Exception as e:
-        st.error(f"Paraphrasing failed: {e}")
-        return "Paraphrase failed."
+        paraphraser = load_paraphraser()
+        prompt = f"paraphrase in {tone} tone: {text}"
+        try:
+            result = paraphraser(prompt, max_length=200, truncation=True)
+            return result[0]['generated_text']
+        except Exception as e:
+            st.error(f"Paraphrasing failed: {e}")
+            return "Paraphrase failed."
 
 def translate_text(text, lang):
-    if lang == "English":
-        return text
-    try:
-        return load_translator().translate(text, dest=lang.lower()[:2]).text
-    except:
-        return text
-    
+        if lang == "English":
+            return text
+        try:
+            return load_translator().translate(text, dest=lang.lower()[:2]).text
+        except:
+            return text
+        
 def generate_pdf(text):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 10, text)
-    pdf_output = BytesIO()
-    pdf.output(pdf_output)
-    pdf_output.seek(0)
-    return pdf_output
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.multi_cell(0, 10, text)
+        pdf_output = BytesIO()
+        pdf.output(pdf_output)
+        pdf_output.seek(0)
+        return pdf_output
 
 def grammar_check(text):
-    tool = load_grammar_tool()
-    if not tool:
-        return text
-    try:
-        return tool.correct(text)
-    except:
-        return text
+        tool = load_grammar_tool()
+        if not tool:
+            return text
+        try:
+            return tool.correct(text)
+        except:
+            return text
 
 def keyword_extract(text):
-    try:
-        kw_model = load_keyword_extractor()
-        return [kw[0] for kw in kw_model.extract_keywords(text, top_n=5)]
-    except:
-        return []
+        try:
+            kw_model = load_keyword_extractor()
+            return [kw[0] for kw in kw_model.extract_keywords(text, top_n=5)]
+        except:
+            return []
 
 def plagiarism_score(orig, para):
-    try:
-        e1, e2 = load_embedder().encode([orig, para])
-        return round(util.cos_sim(e1, e2).item() * 100, 2)
-    except:
-        return 0.0
+        try:
+            e1, e2 = load_embedder().encode([orig, para])
+            return round(util.cos_sim(e1, e2).item() * 100, 2)
+        except:
+            return 0.0
 
 def sentiment_analysis(text):
-    return load_sentiment_analyzer().polarity_scores(text)
+        return load_sentiment_analyzer().polarity_scores(text)
 
 # ==================== PAGES ====================
-if st.session_state.current_page == "Home":
-    st.title("Linguify.AI — Smart Text Tool")
-
-    with st.sidebar:
-        mode = st.selectbox("Mode", ["Summarization", "Paraphrasing", "All-in-One"])
-        if "Summarization" in mode:
-            ratio = st.slider("Summary Ratio (%)", 10, 90, 30) / 100
-        output_lang = st.selectbox("Output Language", ["English", "French", "Spanish"])
-        tone_style = st.selectbox("Tone", ["Neutral", "Formal", "Casual"])
-
-    input_text = st.text_area("Input Text", height=200)
-    uploaded_file = st.file_uploader("Upload File", type=["txt", "pdf", "docx"])
-    
-    if uploaded_file:
-        extracted = extract_text(uploaded_file)
-        if extracted:
-            input_text = extracted
-            st.success(f"✅ {uploaded_file.name} uploaded successfully!")
-            st.caption(f"File type: {uploaded_file.type}, Size: {uploaded_file.size/1024:.1f} KB")
-
-        else:
-            st.error("Could not extract text from file.")
->>>>>>> c3269da (Added PDF download feature)
 
 # Gemini API Functions with Context-Aware Processing
 def process_text_with_gemini(text, operation, language="English", tone="Neutral", adaptation="General", 
@@ -638,7 +749,7 @@ def main():
             border: 1px solid #4B5563;
         }
         
-        /* --- JUICY GRADIENT BUTTONS --- */
+        /* --- GRADIENT BUTTONS --- */
         
         /* Default buttons (Login, Logout, Profile, etc.) */
         .stButton>button:not([kind="primary"]):not([kind="secondary"]) {
@@ -825,7 +936,6 @@ def main():
         tab1, tab2 = st.tabs(["Login", "Register"])
         
         with tab1:
-<<<<<<< HEAD
             st.subheader("Login")
             username = st.text_input("Username", key="login_username")
             password = st.text_input("Password", type="password", key="login_password")
@@ -1033,16 +1143,17 @@ def main():
                 """
             )
         
-        # Main Content Area
+        # ==================== MAIN INPUT SECTION ====================
         st.header("📄 Input")
-        
+
         input_method = st.radio(
             "Choose input method:",
             ["Type/Paste Text", "Upload File", "🎤 Voice Input"]
         )
-        
+
         input_text = ""
 
+<<<<<<< HEAD
         # If we already extracted from a file earlier, prefer that as default
         if not input_text and "extracted_input" in st.session_state:
             input_text = st.session_state["extracted_input"]
@@ -1055,13 +1166,20 @@ def main():
         if input_method == "Type/Paste Text":
             input_text = st.text_area("Enter your text here:", height=200, value=input_text)
         
+=======
+        # 🧾 Type or Paste Text
+        if input_method == "Type/Paste Text":
+            input_text = st.text_area("Enter your text here:", height=200)
+
+        # 📂 Upload File (PDF, DOCX, TXT)
+>>>>>>> 3ab6656 (Improved UI design)
         elif input_method == "Upload File":
             uploaded_file = st.file_uploader("Upload a file", type=['pdf', 'docx', 'txt'])
             
             if uploaded_file:
-                file_type = uploaded_file.name.split('.')[-1].lower()
-                
                 try:
+                    file_type = uploaded_file.name.split('.')[-1].lower()
+                    
                     if file_type == 'pdf':
                         input_text = extract_text_from_pdf(uploaded_file)
 
@@ -1083,6 +1201,7 @@ def main():
 
                     elif file_type == 'txt':
                         input_text = uploaded_file.read().decode('utf-8')
+<<<<<<< HEAD
                         st.success(f"✅ File uploaded! Extracted {len(input_text)} characters.")
                         st.session_state["extracted_input"] = input_text
                         with st.expander("📄 View Extracted Text"):
@@ -1092,16 +1211,29 @@ def main():
                     if input_text:
                         detected_type = detect_content_type(input_text)
                         st.info(f"🔍 Detected content type: **{detected_type.title()}**")
+=======
+                    
+                    st.success(f"✅ {uploaded_file.name} uploaded successfully!")
+                    st.caption(f"File type: {uploaded_file.type}, Size: {uploaded_file.size/1024:.1f} KB")
+                    st.info(f"📊 Extracted {len(input_text)} characters.")
+
+                    # Auto content detection
+                    detected_type = detect_content_type(input_text)
+                    st.info(f"🔍 Detected content type: **{detected_type.title()}**")
+
+                    with st.expander("📄 View Extracted Text"):
+                        st.text_area("Extracted Text:", input_text, height=200, key="extracted")
+>>>>>>> 3ab6656 (Improved UI design)
 
                 except Exception as e:
                     st.error(f"Error reading file: {str(e)}")
-        
+
+        # 🎤 Voice Input
         elif input_method == "🎤 Voice Input":
             st.markdown("<div class='voice-input-box'>", unsafe_allow_html=True)
             st.subheader("🎙️ Voice Recording & Transcription")
-            st.markdown("**Instructions:** Click the button to start recording, speak clearly into your microphone, and click again to stop. The audio will be automatically transcribed.")
-            
-            # Direct Speech-to-Text
+            st.markdown("**Instructions:** Click start, speak clearly, then stop. Your speech will be transcribed below.")
+
             text_from_speech = speech_to_text(
                 language='en',
                 start_prompt="🎙️ Start Speaking",
@@ -1110,50 +1242,56 @@ def main():
                 just_once=False,
                 key='speech_to_text'
             )
-            
+
             if text_from_speech:
                 st.session_state.transcribed_text = text_from_speech
                 st.session_state.voice_input_confirmed = False
-                st.success(f"✅ Transcribed successfully!")
-            
-            # Show transcription result
+                st.success("✅ Transcribed successfully!")
+
             if st.session_state.transcribed_text:
                 st.markdown("<div class='transcription-box'>", unsafe_allow_html=True)
                 st.markdown("**📝 Transcribed Text:**")
-                
-                # Editable text area for transcription
+
                 edited_text = st.text_area(
                     "Edit if needed:",
                     value=st.session_state.transcribed_text,
                     height=150,
                     key="transcription_edit"
                 )
-                
+
                 col_btn1, col_btn2, col_btn3 = st.columns([1, 1, 2])
-                
+
                 with col_btn1:
                     if st.button("✅ Use This Text", type="primary", use_container_width=True):
                         st.session_state.confirmed_voice_text = edited_text
                         st.session_state.voice_input_confirmed = True
                         st.success("✅ Text ready for processing!")
-                
+
                 with col_btn2:
                     if st.button("🔄 Clear & Record Again", use_container_width=True):
                         st.session_state.transcribed_text = ""
                         st.session_state.voice_input_confirmed = False
                         st.session_state.confirmed_voice_text = ""
                         st.rerun()
-                
+
                 with col_btn3:
                     st.caption(f"📊 {len(edited_text.split())} words | {len(edited_text)} characters")
-                
+
                 st.markdown("</div>", unsafe_allow_html=True)
+<<<<<<< HEAD
                 
                 # If confirmed, use the text
                 if input_method == "🎤 Voice Input" and st.session_state.voice_input_confirmed:
                     input_text = st.session_state.confirmed_voice_text
             
+=======
+
+                if st.session_state.voice_input_confirmed:
+                    input_text = edited_text
+
+>>>>>>> 3ab6656 (Improved UI design)
             st.markdown("</div>", unsafe_allow_html=True)
+
         
         # Process Button
         if st.button("🚀 Process Text", type="primary"):
@@ -1195,24 +1333,24 @@ def main():
                     }
                     add_to_history(st.session_state.username, operation, params, output_text)
         
-        # Output Section
+        # ==================== OUTPUT SECTION ====================
+        # ==================== OUTPUT SECTION ====================
         if 'output_text' in st.session_state:
             st.markdown("---")
             st.header("✨ Output")
-            
+
+            # Output Box 
             st.markdown("<div class='output-section'>", unsafe_allow_html=True)
-            if st.session_state.operation == "Summarize" and st.session_state.summary_type:
-                st.markdown(f"**{st.session_state.summary_type} Summary:**")
-            else:
-                st.markdown(f"**{st.session_state.operation}d Text:**")
+            st.subheader(f"{st.session_state.summary_type if st.session_state.operation == 'Summarize' else st.session_state.operation} Output:")
+            
+            # Display text cleanly without HTML wrapping
             st.write(st.session_state.output_text)
             st.markdown("</div>", unsafe_allow_html=True)
-            
+
             # Action Buttons
             st.subheader("📥 Export Options")
-            
             col1, col2, col3, col4, col5 = st.columns(5)
-            
+
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             title = f"{st.session_state.operation}_{timestamp}"
             
@@ -1331,77 +1469,86 @@ def main():
                     else:
                         st.error(f"Error during comparison: {comparison_result['error']}")
     
-    # History Tab
-    with tab_history:
-        st.header("📜 Smart History & Versioning")
-        st.markdown("View all your previous text processing operations with timestamps and parameters.")
-        
-        if st.session_state.username in st.session_state.history and st.session_state.history[st.session_state.username]:
-            history = st.session_state.history[st.session_state.username]
-            
-            # Summary statistics
-            col_hist1, col_hist2, col_hist3 = st.columns(3)
-            with col_hist1:
-                st.metric("Total Operations", len(history))
-            with col_hist2:
-                summarize_count = sum(1 for h in history if h['operation'] == 'Summarize')
-                st.metric("Summaries", summarize_count)
-            with col_hist3:
-                paraphrase_count = sum(1 for h in history if h['operation'] == 'Paraphrase')
-                st.metric("Paraphrases", paraphrase_count)
-            
-            st.markdown("---")
-            
-            # Display history entries
-            for idx, entry in enumerate(history):
-                with st.expander(f"📌 {entry['operation']} - {entry['timestamp']}", expanded=(idx == 0)):
-                    col_h1, col_h2 = st.columns([2, 1])
-                    
-                    with col_h1:
-                        st.markdown("**Output Preview:**")
-                        st.write(entry['output_preview'])
-                        
-                        if st.button(f"View Full Output", key=f"view_{idx}"):
-                            st.session_state[f'show_full_{idx}'] = not st.session_state.get(f'show_full_{idx}', False)
-                        
-                        if st.session_state.get(f'show_full_{idx}', False):
-                            st.markdown("**Full Output:**")
-                            st.text_area("", entry['full_output'], height=200, key=f"full_output_{idx}")
-                    
-                    with col_h2:
-                        st.markdown("**Parameters:**")
-                        params = entry['parameters']
-                        st.caption(f"**Operation:** {params['operation']}")
-                        st.caption(f"**Language:** {params['language']}")
-                        st.caption(f"**Tone:** {params['tone']}")
-                        st.caption(f"**Style:** {params['style']}")
-                        if params.get('summary_type'):
-                            st.caption(f"**Summary Type:** {params['summary_type']}")
-                            st.caption(f"**Depth:** {params['depth']}")
-                        st.caption(f"**Readability:** {params['readability']}")
-                        if params.get('input_method'):
-                            st.caption(f"**Input Method:** {params['input_method']}")
-                        
-                        # Restore button
-                        if st.button("♻️ Restore", key=f"restore_{idx}"):
-                            st.session_state.output_text = entry['full_output']
-                            st.session_state.output_language = params['language']
-                            st.session_state.operation = params['operation']
-                            st.session_state.summary_type = params.get('summary_type')
-                            st.success("✅ Output restored! Go to 'Process Text' tab to view.")
-            
-            # Clear history option
-            st.markdown("---")
-            if st.button("🗑️ Clear History", type="secondary"):
-                if st.button("⚠️ Confirm Clear History"):
-                    st.session_state.history[st.session_state.username] = []
-                    st.success("History cleared!")
-                    st.rerun()
-        else:
-            st.info("📭 No history yet. Start processing some text!")
-=======
+# ==================== HISTORY TAB ====================
+tab_process, tab_compare, tab_history = st.tabs(["📝 Process Text", "🔍 Compare Texts", "📜 History"])
+with tab_history:
+    st.header("📜 Smart History & Versioning")
+    st.markdown("View all your previous text processing operations with timestamps and parameters.")
+
+    if st.session_state.username in st.session_state.history and st.session_state.history[st.session_state.username]:
+        history = st.session_state.history[st.session_state.username]
+
+        # Summary statistics
+        col_hist1, col_hist2, col_hist3 = st.columns(3)
+        with col_hist1:
+            st.metric("Total Operations", len(history))
+        with col_hist2:
+            summarize_count = sum(1 for h in history if h['operation'] == 'Summarize')
+            st.metric("Summaries", summarize_count)
+        with col_hist3:
+            paraphrase_count = sum(1 for h in history if h['operation'] == 'Paraphrase')
+            st.metric("Paraphrases", paraphrase_count)
+
+        st.markdown("---")
+
+        # Display history entries
+        for idx, entry in enumerate(history):
+            with st.expander(f"📌 {entry['operation']} - {entry['timestamp']}", expanded=(idx == 0)):
+                col_h1, col_h2 = st.columns([2, 1])
+
+                with col_h1:
+                    st.markdown("**Output Preview:**")
+                    st.write(entry['output_preview'])
+
+                    if st.button(f"View Full Output", key=f"view_{idx}"):
+                        st.session_state[f'show_full_{idx}'] = not st.session_state.get(f'show_full_{idx}', False)
+
+                    if st.session_state.get(f'show_full_{idx}', False):
+                        st.markdown("**Full Output:**")
+                        st.text_area("", entry['full_output'], height=200, key=f"full_output_{idx}")
+
+                with col_h2:
+                    st.markdown("**Parameters:**")
+                    params = entry['parameters']
+                    st.caption(f"**Operation:** {params['operation']}")
+                    st.caption(f"**Language:** {params['language']}")
+                    st.caption(f"**Tone:** {params['tone']}")
+                    st.caption(f"**Style:** {params['style']}")
+                    if params.get('summary_type'):
+                        st.caption(f"**Summary Type:** {params['summary_type']}")
+                        st.caption(f"**Depth:** {params['depth']}")
+                    st.caption(f"**Readability:** {params['readability']}")
+                    if params.get('input_method'):
+                        st.caption(f"**Input Method:** {params['input_method']}")
+
+                    # Restore button
+                    if st.button("♻️ Restore", key=f"restore_{idx}"):
+                        st.session_state.output_text = entry['full_output']
+                        st.session_state.output_language = params['language']
+                        st.session_state.operation = params['operation']
+                        st.session_state.summary_type = params.get('summary_type')
+                        st.success("✅ Output restored! Go to 'Process Text' tab to view.")
+
+        # Clear history option
+        st.markdown("---")
+        if st.button("🗑️ Clear History", type="secondary"):
+            if st.button("⚠️ Confirm Clear History"):
+                st.session_state.history[st.session_state.username] = []
+                st.success("History cleared!")
+                st.rerun()
+
+    else:
+        st.info("📭 No history yet. Start processing some text!")
+
+        if 'output_data' not in st.session_state:
+            st.session_state.output_data = {}
+        output_data = st.session_state.output_data
+
+        # Tabs for output display
+        tab1, tab2, tab3 = st.tabs(["Summary", "Paraphrase", "Analysis"])
+
+        with tab1:
             st.write(output_data.get("summary", "No summary generated."))
-            
             if output_data.get("summary"):
                 st.download_button(
                     label="📄 Download Summary as PDF",
@@ -1422,12 +1569,11 @@ def main():
 
         with tab3:
             st.json({
-                "Keywords": output_data["keywords"],
-                "Readability Score": output_data["readability"],
-                "Plagiarism %": output_data["plagiarism"],
-                "Sentiment": output_data["sentiment"]
+                "Keywords": output_data.get("keywords", []),
+                "Readability Score": output_data.get("readability", "N/A"),
+                "Plagiarism %": output_data.get("plagiarism", "N/A"),
+                "Sentiment": output_data.get("sentiment", {})
             })
->>>>>>> c3269da (Added PDF download feature)
 
 if __name__ == "__main__":
     main()
