@@ -67,11 +67,34 @@ def logout_user():
 
 # File Processing Functions
 def extract_text_from_pdf(pdf_file):
-    pdf_reader = PyPDF2.PdfReader(pdf_file)
-    text = ""
-    for page in pdf_reader.pages:
-        text += page.extract_text()
-    return text
+    """
+    Robust PDF text extraction:
+    - Handles encrypted PDFs (tries empty password)
+    - Avoids None concatenation (PyPDF2 can return None)
+    - Returns "" if nothing extractable
+    """
+    try:
+        reader = PyPDF2.PdfReader(pdf_file)
+
+        # Try decrypt if encrypted
+        if getattr(reader, "is_encrypted", False):
+            try:
+                # PyPDF2 3.x may still allow decrypt(""); if not, this will be caught
+                reader.decrypt("")  # attempt empty password
+            except Exception:
+                return ""
+
+        parts = []
+        for page in reader.pages:
+            try:
+                t = page.extract_text() or ""
+            except Exception:
+                t = ""
+            parts.append(t)
+
+        return "\n".join(parts).strip()
+    except Exception:
+        return ""
 
 def extract_text_from_docx(docx_file):
     doc = docx.Document(docx_file)
@@ -808,9 +831,13 @@ def main():
         )
         
         input_text = ""
+
+        # If we already extracted from a file earlier, prefer that as default
+        if not input_text and "extracted_input" in st.session_state:
+            input_text = st.session_state["extracted_input"]
         
         if input_method == "Type/Paste Text":
-            input_text = st.text_area("Enter your text here:", height=200)
+            input_text = st.text_area("Enter your text here:", height=200, value=input_text)
         
         elif input_method == "Upload File":
             uploaded_file = st.file_uploader("Upload a file", type=['pdf', 'docx', 'txt'])
@@ -821,19 +848,35 @@ def main():
                 try:
                     if file_type == 'pdf':
                         input_text = extract_text_from_pdf(uploaded_file)
+
+                        if input_text:
+                            st.success(f"✅ PDF uploaded! Extracted ~{len(input_text.split())} words.")
+                            st.session_state["extracted_input"] = input_text
+
+                            with st.expander("📄 View Extracted Text"):
+                                st.text_area("Extracted Text:", input_text, height=200, key="extracted")
+                        else:
+                            st.warning("No extractable text found. The PDF may be scanned/protected or has non-text pages.")
+
                     elif file_type == 'docx':
                         input_text = extract_text_from_docx(uploaded_file)
+                        st.success(f"✅ File uploaded! Extracted {len(input_text)} characters.")
+                        st.session_state["extracted_input"] = input_text
+                        with st.expander("📄 View Extracted Text"):
+                            st.text_area("Extracted Text:", input_text, height=200, key="extracted_docx")
+
                     elif file_type == 'txt':
                         input_text = uploaded_file.read().decode('utf-8')
-                    
-                    st.success(f"✅ File uploaded! Extracted {len(input_text)} characters.")
+                        st.success(f"✅ File uploaded! Extracted {len(input_text)} characters.")
+                        st.session_state["extracted_input"] = input_text
+                        with st.expander("📄 View Extracted Text"):
+                            st.text_area("Extracted Text:", input_text, height=200, key="extracted_txt")
                     
                     # Auto-detect content type
-                    detected_type = detect_content_type(input_text)
-                    st.info(f"🔍 Detected content type: **{detected_type.title()}**")
-                    
-                    with st.expander("📄 View Extracted Text"):
-                        st.text_area("Extracted Text:", input_text, height=200, key="extracted")
+                    if input_text:
+                        detected_type = detect_content_type(input_text)
+                        st.info(f"🔍 Detected content type: **{detected_type.title()}**")
+
                 except Exception as e:
                     st.error(f"Error reading file: {str(e)}")
         
