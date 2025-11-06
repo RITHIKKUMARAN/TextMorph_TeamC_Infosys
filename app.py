@@ -36,6 +36,8 @@ if 'transcribed_text' not in st.session_state:
     st.session_state.transcribed_text = ""
 if 'voice_input_confirmed' not in st.session_state:
     st.session_state.voice_input_confirmed = False
+if 'confirmed_voice_text' not in st.session_state:
+    st.session_state.confirmed_voice_text = ""
 
 # User Authentication Functions
 def login_user(username, password):
@@ -836,6 +838,11 @@ def main():
         if not input_text and "extracted_input" in st.session_state:
             input_text = st.session_state["extracted_input"]
         
+        # If voice input was confirmed, use that text
+        if not input_text and st.session_state.get('voice_input_confirmed', False) and st.session_state.get('confirmed_voice_text', ''):
+            input_text = st.session_state.confirmed_voice_text
+
+        
         if input_method == "Type/Paste Text":
             input_text = st.text_area("Enter your text here:", height=200, value=input_text)
         
@@ -917,7 +924,7 @@ def main():
                 
                 with col_btn1:
                     if st.button("✅ Use This Text", type="primary", use_container_width=True):
-                        input_text = edited_text
+                        st.session_state.confirmed_voice_text = edited_text
                         st.session_state.voice_input_confirmed = True
                         st.success("✅ Text ready for processing!")
                 
@@ -925,6 +932,7 @@ def main():
                     if st.button("🔄 Clear & Record Again", use_container_width=True):
                         st.session_state.transcribed_text = ""
                         st.session_state.voice_input_confirmed = False
+                        st.session_state.confirmed_voice_text = ""
                         st.rerun()
                 
                 with col_btn3:
@@ -933,8 +941,8 @@ def main():
                 st.markdown("</div>", unsafe_allow_html=True)
                 
                 # If confirmed, use the text
-                if st.session_state.voice_input_confirmed:
-                    input_text = edited_text
+                if input_method == "🎤 Voice Input" and st.session_state.voice_input_confirmed:
+                    input_text = st.session_state.confirmed_voice_text
             
             st.markdown("</div>", unsafe_allow_html=True)
         
