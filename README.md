@@ -474,9 +474,71 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 
 **MIT License** - Free to use, modify, and distribute with attribution
 
-## 🙏 Acknowledgments
+## 👥 Our Team
 
-**Built with ❤️ by Team C**
+<div align="center">
+
+<table>
+<tr>
+<td align="center" width="25%">
+<a href="https://github.com/RITHIKKUMARAN">
+<img src="https://avatars.githubusercontent.com/RITHIKKUMARAN?v=4" width="120px" style="border-radius: 50%;" alt="Rithik Kumaran K"/><br>
+<img src="https://img.shields.io/badge/Team%20Leader-FF6B9D?style=for-the-badge&logo=github&logoColor=white" alt="Team Leader"/>
+<br><br>
+<b>Rithik Kumaran K</b>
+</a>
+<br><br>
+<a href="https://github.com/RITHIKKUMARAN">
+<img src="https://img.shields.io/github/followers/RITHIKKUMARAN?label=Follow&style=social" alt="GitHub"/>
+</a>
+</td>
+<td align="center" width="25%">
+<a href="https://github.com/manaswishirbhate">
+<img src="https://avatars.githubusercontent.com/manaswishirbhate?v=4" width="120px" style="border-radius: 50%;" alt="Manaswi Shirbhate"/><br>
+<img src="https://img.shields.io/badge/Team%20Member-6366F1?style=for-the-badge&logo=github&logoColor=white" alt="Team Member"/>
+<br><br>
+<b>Manaswi<br>Shirbhate</b>
+</a>
+<br><br>
+<a href="https://github.com/manaswishirbhate">
+<img src="https://img.shields.io/github/followers/manaswishirbhate?label=Follow&style=social" alt="GitHub"/>
+</a>
+</td>
+<td align="center" width="25%">
+<a href="https://github.com/TanujaModugumudi">
+<img src="https://avatars.githubusercontent.com/TanujaModugumudi?v=4" width="120px" style="border-radius: 50%;" alt="Tanuja Modugumudi"/><br>
+<img src="https://img.shields.io/badge/Team%20Member-10B981?style=for-the-badge&logo=github&logoColor=white" alt="Team Member"/>
+<br><br>
+<b>Tanuja<br>Modugumudi</b>
+</a>
+<br><br>
+<a href="https://github.com/TanujaModugumudi">
+<img src="https://img.shields.io/github/followers/TanujaModugumudi?label=Follow&style=social" alt="GitHub"/>
+</a>
+</td>
+<td align="center" width="25%">
+<a href="https://github.com/VarunChaturvedi0929">
+<img src="https://avatars.githubusercontent.com/VarunChaturvedi0929?v=4" width="120px" style="border-radius: 50%;" alt="Varun Chaturvedi"/><br>
+<img src="https://img.shields.io/badge/Team%20Member-FF8C00?style=for-the-badge&logo=github&logoColor=white" alt="Team Member"/>
+<br><br>
+<b>Varun<br>Chaturvedi</b>
+</a>
+<br><br>
+<a href="https://github.com/VarunChaturvedi0929">
+<img src="https://img.shields.io/github/followers/VarunChaturvedi0929?label=Follow&style=social" alt="GitHub"/>
+</a>
+</td>
+</tr>
+</table>
+
+<p>
+<i>Built with passion by Team C</i>
+</p>
+
+</div>
+
+
+## 🙏 Acknowledgments
 
 Special thanks to:
 - **Google** for providing the powerful Gemini API
