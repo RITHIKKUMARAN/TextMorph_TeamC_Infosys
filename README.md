@@ -483,9 +483,8 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 <td align="center" width="25%">
 <a href="https://github.com/RITHIKKUMARAN">
 <img src="https://avatars.githubusercontent.com/RITHIKKUMARAN?v=4" width="120px" style="border-radius: 50%;" alt="Rithik Kumaran K"/><br>
-<img src="https://img.shields.io/badge/Team%20Leader-FF6B9D?style=for-the-badge&logo=github&logoColor=white" alt="Team Leader"/>
-<br><br>
-<b>Rithik Kumaran K</b>
+<img src="https://img.shields.io/badge/Team%20Leader-FF6B9D?style=for-the-badge&logo=github&logoColor=white" alt="Team Leader" style="margin-top: 8px;"/><br>
+<b style="display: block; margin-top: 8px;">Rithik<br>Kumaran K</b>
 </a>
 <br><br>
 <a href="https://github.com/RITHIKKUMARAN">
@@ -495,9 +494,8 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 <td align="center" width="25%">
 <a href="https://github.com/manaswishirbhate">
 <img src="https://avatars.githubusercontent.com/manaswishirbhate?v=4" width="120px" style="border-radius: 50%;" alt="Manaswi Shirbhate"/><br>
-<img src="https://img.shields.io/badge/Team%20Member-6366F1?style=for-the-badge&logo=github&logoColor=white" alt="Team Member"/>
-<br><br>
-<b>Manaswi<br>Shirbhate</b>
+<img src="https://img.shields.io/badge/Team%20Member-6366F1?style=for-the-badge&logo=github&logoColor=white" alt="Team Member" style="margin-top: 8px;"/><br>
+<b style="display: block; margin-top: 8px;">Manaswi<br>Shirbhate</b>
 </a>
 <br><br>
 <a href="https://github.com/manaswishirbhate">
@@ -507,9 +505,8 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 <td align="center" width="25%">
 <a href="https://github.com/TanujaModugumudi">
 <img src="https://avatars.githubusercontent.com/TanujaModugumudi?v=4" width="120px" style="border-radius: 50%;" alt="Tanuja Modugumudi"/><br>
-<img src="https://img.shields.io/badge/Team%20Member-10B981?style=for-the-badge&logo=github&logoColor=white" alt="Team Member"/>
-<br><br>
-<b>Tanuja<br>Modugumudi</b>
+<img src="https://img.shields.io/badge/Team%20Member-10B981?style=for-the-badge&logo=github&logoColor=white" alt="Team Member" style="margin-top: 8px;"/><br>
+<b style="display: block; margin-top: 8px;">Tanuja<br>Modugumudi</b>
 </a>
 <br><br>
 <a href="https://github.com/TanujaModugumudi">
@@ -519,9 +516,8 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 <td align="center" width="25%">
 <a href="https://github.com/VarunChaturvedi0929">
 <img src="https://avatars.githubusercontent.com/VarunChaturvedi0929?v=4" width="120px" style="border-radius: 50%;" alt="Varun Chaturvedi"/><br>
-<img src="https://img.shields.io/badge/Team%20Member-FF8C00?style=for-the-badge&logo=github&logoColor=white" alt="Team Member"/>
-<br><br>
-<b>Varun<br>Chaturvedi</b>
+<img src="https://img.shields.io/badge/Team%20Member-FF8C00?style=for-the-badge&logo=github&logoColor=white" alt="Team Member" style="margin-top: 8px;"/><br>
+<b style="display: block; margin-top: 8px;">Varun<br>Chaturvedi</b>
 </a>
 <br><br>
 <a href="https://github.com/VarunChaturvedi0929">
