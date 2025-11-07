@@ -19,3 +19,6 @@ numpy==1.26.4
 python-dotenv
 docx
 google-generativeai
+python-docx
+streamlit-mic-recorder
+markdown
