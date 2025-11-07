@@ -35,30 +35,114 @@
 
 </div>
 
-## 🌟 Overview
+<div align="center">
+
+# TextMorph Overview
+
+<img src="https://readme-typing-svg.herokuapp.com?font=Poppins&size=26&duration=3000&pause=2000&color=A855F7&center=true&vCenter=true&width=700&lines=Revolutionizing+Text+Processing+with+AI" alt="Overview" />
 
 **TextMorph** is a comprehensive, enterprise-grade text processing suite that revolutionizes how you interact with text content. Leveraging Google's cutting-edge Gemini API and built with Streamlit, it offers advanced summarization, semantic comparison, multilingual capabilities, and personalized AI profiles.
 
-### 🎯 Why TextMorph?
+## Why TextMorph?
 
-- ✅ **AI-Powered Intelligence** - Context-aware processing with Gemini API
-- ✅ **User Personalization** - AI remembers your style preferences
-- ✅ **Multilingual Support** - 8 languages with natural translation
-- ✅ **Enterprise Features** - Semantic analysis, plagiarism detection
-- ✅ **Multiple Formats** - Export to PDF, DOCX, HTML, Markdown, JSON
+<table>
+<tr>
+<td align="center">
+
+### 🤖 AI-Powered Intelligence
+
+Context-aware processing with Gemini API
+
+</td>
+<td align="center">
+
+### 👤 User Personalization
+
+AI remembers your style preferences
+
+</td>
+<td align="center">
+
+### 🌍 Multilingual Support
+
+8 languages with natural translation
+
+</td>
+</tr>
+<tr>
+<td align="center">
+
+### ⚙️ Enterprise Features
+
+Semantic analysis & plagiarism detection
+
+</td>
+<td align="center">
+
+### 📥 Multiple Formats
+
+Export to PDF, DOCX, HTML, Markdown, JSON
+
+</td>
+<td align="center">
+
+### 🚀 Production Ready
+
+Scalable, secure & enterprise-grade
+
+</td>
+</tr>
+</table>
+
+---
+
+</div>
+
 
 ### 💻 Quick Example
 
-from textmorph import TextProcessor
+<div align="center">
 
-Initialize with your preferences 
-processor = TextProcessor(api_key="your_gemini_key", user_profile="your_username")
+<table>
+<tr>
+<td align="center" width="33%">
 
-Process text intelligently
-result = processor.summarize(text=your_content, depth="comprehnsive",tone="professional",language="english")
+#### 1️⃣ Initialize
 
-Export in any format
-processor.export(result, format="pdf")
+processor = TextProcessor(
+api_key="your_key",
+user_profile="username"
+)
+
+</td>
+<td align="center" width="33%">
+
+#### 2️⃣ Process
+
+result = processor.summarize(
+text=your_content,
+depth="comprehensive",
+tone="professional",
+language="english"
+)
+
+</td>
+<td align="center" width="34%">
+
+#### 3️⃣ Export
+
+processor.export(
+result,
+format="pdf")
+
+</td>
+</tr>
+</table>
+
+<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=16&duration=2500&pause=1000&color=A855F7&center=true&vCenter=true&width=600&lines=Initialize+→+Process+→+Export;+Transform+Your+Text+in+3+Steps!" alt="Steps" />
+
+</div>
+
 
 ### 📊 Quick Stats
 
@@ -70,26 +154,64 @@ processor.export(result, format="pdf")
 
 ### 🔐 User Authentication & AI Profiles
 
-**Authentication System**
-- 🔒 Secure login and registration
-- 👤 Individual user profiles
-- 💾 Session persistence across usage
+<table>
+<tr>
+<td align="center" width="50%">
 
-**AI Style Memory**
-- 🧠 Personalized preferences per user
-- 🎨 Stores tone, style, and language preferences
-- 📏 Remembers depth level preferences
-- ⚡ Auto-applies saved settings to all operations
+#### 🔒 Authentication System
+
+- Secure login and registration
+- Individual user profiles
+- Session persistence across usage
+
+</td>
+<td align="center" width="50%">
+
+#### 🧠 AI Style Memory
+
+- Personalized preferences per user
+- Stores tone, style, and language
+- Remembers depth level preferences
+- Auto-applies saved settings
+
+</td>
+</tr>
+</table>
+
+
 
 > 💡 **Tip:** Set up your AI profile once, and TextMorph adapts all future operations to match your preferences automatically!
 
+</div>
+
 ### 📄 Multiple Input Methods
 
-| Input Type | Icon | Supported Formats | Features |
-|------------|:----:|-------------------|----------|
-| **Text Entry** | 📝 | Direct typing/paste | Real-time processing |
-| **File Upload** | 📎 | PDF, DOCX, TXT | Automatic text extraction |
-| **Voice Input** | 🎤 | Live microphone | Speech-to-text transcription |
+<table>
+<tr>
+<td align="center" width="33%">
+
+#### 📝 Text Entry
+
+Direct typing/paste with real-time processing
+
+</td>
+<td align="center" width="33%">
+
+#### 📎 File Upload
+
+PDF, DOCX, TXT with automatic text extraction
+
+</td>
+<td align="center" width="34%">
+
+#### 🎤 Voice Input
+
+Live microphone with speech-to-text transcription
+
+</td>
+</tr>
+</table>
+
 
 **🎤 Voice Input Capabilities**
 - ✓ Real-time recording with visual feedback
@@ -257,13 +379,13 @@ processor.export(result, format="pdf")
 
 ### Core Dependencies
 
-streamlit >= 1.28.0 # Interactive UI Framework
-google-generativeai >= 0.3.0 # AI Engine
-gTTS >= 2.4.0 # Text-to-Speech
-PyPDF2 >= 3.0.0 # PDF Processing
-python-docx >= 1.0.0 # Word Documents
-fpdf >= 1.7.2 # PDF Generation
-text
+- streamlit >= 1.28.0 # Interactive UI Framework
+- google-generativeai >= 0.3.0 # AI Engine
+- gTTS >= 2.4.0 # Text-to-Speech
+- PyPDF2 >= 3.0.0 # PDF Processing
+- python-docx >= 1.0.0 # Word Documents
+- fpdf >= 1.7.2 # PDF Generation
+
 
 ## 🚀 Quick Start
 
@@ -286,7 +408,7 @@ cd TextMorph_TeamC_Infosys
 Install dependencies
 pip install -r requirements.txt
 
-text
+
 
 **Option 2: Using pip**
 
@@ -295,9 +417,6 @@ pip install git+https://github.com/RITHIKKUMARAN/TextMorph_TeamC_Infosys.git
 
 Or install locally
 cd TextMorph_TeamC_Infosys
-pi
-
-text
 
 ### Configuration
 
@@ -312,7 +431,7 @@ APP_VERSION=1.0.0
 User Settings
 DEFAULT_LANGUAGE=english
 DEFAULT_TONE=professional
-text
+
 
 ### Running the Application
 
@@ -325,7 +444,7 @@ streamlit run app.py --server.port 8080
 Or with custom address
 streamlit run app.py --server.address 0.0.0.0
 
-text
+
 
 **Application will launch at `http://localhost:8501`**
 
