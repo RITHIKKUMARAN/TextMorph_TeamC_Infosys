@@ -399,49 +399,49 @@ Live microphone with speech-to-text transcription
 
 **Option 1: Clone Repository**
 
-Clone the repo
+Clone the repo<br>
 git clone https://github.com/RITHIKKUMARAN/TextMorph_TeamC_Infosys.git
 
-Navigate to directory
+Navigate to directory<br>
 cd TextMorph_TeamC_Infosys
 
-Install dependencies
+Install dependencies<br>
 pip install -r requirements.txt
 
 
 
 **Option 2: Using pip**
 
-Install from GitHub
+Install from GitHub<br>
 pip install git+https://github.com/RITHIKKUMARAN/TextMorph_TeamC_Infosys.git
 
-Or install locally
+Or install locally<br>
 cd TextMorph_TeamC_Infosys
 
 ### Configuration
 
 Create a `.env` file in the root directory:
 
-API Configuration
-GEMINI_API_KEY=your_gemini_api_key_here
+API Configuration<br>
+GEMINI_API_KEY=your_gemini_api_key_here<br>
 
 Application Settings
-APP_NAME=TextMorph
-APP_VERSION=1.0.0
-User Settings
-DEFAULT_LANGUAGE=english
-DEFAULT_TONE=professional
+APP_NAME=TextMorph<br>
+APP_VERSION=1.0.0<br>
+User Settings<br>
+DEFAULT_LANGUAGE=english<br>
+DEFAULT_TONE=professional<br>
 
 
 ### Running the Application
 
-Start the Streamlit server
-streamlit run app.py
+Start the Streamlit server<br>
+streamlit run app.py<br>
 
-Or with custom port
+Or with custom port<br>
 streamlit run app.py --server.port 8080
 
-Or with custom address
+Or with custom address<br>
 streamlit run app.py --server.address 0.0.0.0
 
 
@@ -470,32 +470,32 @@ Use default credentials:
 
 ### Basic Summarization
 
-from textmorph import TextProcessor
+from textmorph import TextProcessor<br>
 
-Initialize processor
-processor = TextProcessor(api_key="your_key")
+Initialize processor<br>
+processor = TextProcessor(api_key="your_key")<br>
 
-Summarize text
-summary = processor.summarize(text="Your long text here...", summary_type="abstractive",depth="detailed",content_type="blog")
+Summarize text<br>
+summary = processor.summarize(text="Your long text here...", summary_type="abstractive",depth="detailed",content_type="blog")<br>
 print(summary)
 
 ### Multilingual Translation
 
-Simultaneous summarize + translate
-result = processor.translate_and_summarize(text="English text here...",target_language="spanish",depth="comprehensive")
+Simultaneous summarize + translate<br>
+result = processor.translate_and_summarize(text="English text here...",target_language="spanish",depth="comprehensive")<br>
 
 ### Semantic Comparison
 
-Compare two texts
-comparison = processor.compare_texts(text1="Original text...",text2="Paraphrased text...")
+Compare two texts<br>
+comparison = processor.compare_texts(text1="Original text...",text2="Paraphrased text...")<br>
 
-print(f"Similarity: {comparison['similarity_score']}%")
+print(f"Similarity: {comparison['similarity_score']}%")<br>
 print(f"Plagiarism Risk: {comparison['plagiarism_risk']}")
 
 ### Export Results
 
-Export to multiple formats
-processor.export(result, format="pdf", filename="summary.pdf")
+Export to multiple formats<br>
+processor.export(result, format="pdf", filename="summary.pdf")<br>
 processor.export(result, format="docx", filename="summary.docx")
 
 
@@ -566,16 +566,16 @@ We welcome contributions from the community! Here's how you can help make TextMo
 
 ### Development Setup
 
-Fork and clone the repository
+Fork and clone the repository<br>
 git clone https://github.com/YOUR_USERNAME/TextMorph_TeamC_Infosys.git
 
-Create a new branch
+Create a new branch<br>
 git checkout -b feature/your-feature-name
 
-Make your changes and commit
+Make your changes and commit<br>
 git commit -m "Add: your feature description"
 
-Push to your fork
+Push to your fork<br>
 git push origin feature/your-feature-name
 
 Open a Pull Request
@@ -599,7 +599,7 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 
 <table>
 <tr>
-<td align="center" width="25%">
+<td align="center" width="20%">
 <a href="https://github.com/RITHIKKUMARAN">
 <img src="https://avatars.githubusercontent.com/RITHIKKUMARAN?v=4" width="120px" style="border-radius: 50%;" alt="Rithik Kumaran K"/><br>
 <img src="https://img.shields.io/badge/Team%20Leader-FF6B9D?style=for-the-badge&logo=github&logoColor=white" alt="Team Leader" style="margin-top: 8px;"/><br>
@@ -610,7 +610,7 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 <img src="https://img.shields.io/github/followers/RITHIKKUMARAN?label=Follow&style=social" alt="GitHub"/>
 </a>
 </td>
-<td align="center" width="25%">
+<td align="center" width="20%">
 <a href="https://github.com/manaswishirbhate">
 <img src="https://avatars.githubusercontent.com/manaswishirbhate?v=4" width="120px" style="border-radius: 50%;" alt="Manaswi Shirbhate"/><br>
 <img src="https://img.shields.io/badge/Team%20Member-6366F1?style=for-the-badge&logo=github&logoColor=white" alt="Team Member" style="margin-top: 8px;"/><br>
@@ -621,7 +621,7 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 <img src="https://img.shields.io/github/followers/manaswishirbhate?label=Follow&style=social" alt="GitHub"/>
 </a>
 </td>
-<td align="center" width="25%">
+<td align="center" width="20%">
 <a href="https://github.com/TanujaModugumudi">
 <img src="https://avatars.githubusercontent.com/TanujaModugumudi?v=4" width="120px" style="border-radius: 50%;" alt="Tanuja Modugumudi"/><br>
 <img src="https://img.shields.io/badge/Team%20Member-10B981?style=for-the-badge&logo=github&logoColor=white" alt="Team Member" style="margin-top: 8px;"/><br>
@@ -632,7 +632,18 @@ This project is licensed under the MIT License - see the [LICENSE](https://githu
 <img src="https://img.shields.io/github/followers/TanujaModugumudi?label=Follow&style=social" alt="GitHub"/>
 </a>
 </td>
-<td align="center" width="25%">
+<td align="center" width="20%">
+<a href="https://github.com/ruthujaspol">
+<img src="https://avatars.githubusercontent.com/ruthujaspol?v=4" width="120px" style="border-radius: 50%;" alt="Ruthuja Sanjay Pol"/><br>
+<img src="https://img.shields.io/badge/Team%20Member-9333EA?style=for-the-badge&logo=github&logoColor=white" alt="Team Member" style="margin-top: 8px;"/><br>
+<b style="display: block; margin-top: 8px;">Ruthuja<br>Sanjay Pol</b>
+</a>
+<br><br>
+<a href="https://github.com/ruthujaspol">
+<img src="https://img.shields.io/github/followers/ruthujaspol?label=Follow&style=social" alt="GitHub"/>
+</a>
+</td>
+<td align="center" width="20%">
 <a href="https://github.com/VarunChaturvedi0929">
 <img src="https://avatars.githubusercontent.com/VarunChaturvedi0929?v=4" width="120px" style="border-radius: 50%;" alt="Varun Chaturvedi"/><br>
 <img src="https://img.shields.io/badge/Team%20Member-FF8C00?style=for-the-badge&logo=github&logoColor=white" alt="Team Member" style="margin-top: 8px;"/><br>
